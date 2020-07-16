@@ -93,7 +93,7 @@ func main() {
 
 	fmt.Println("Ping OK")
 
-	time.Sleep(20 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	requestBody2, err := json.Marshal(message2)
 	fmt.Printf("%s\n", requestBody2)
