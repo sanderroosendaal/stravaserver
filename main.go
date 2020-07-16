@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 type Update struct {
@@ -52,6 +53,16 @@ func main() {
 		Updates:        update,
 	}
 
+	message2 := Message{
+		AspectType:     "update",
+		EventTime:      1516126040,
+		ObjectId:       3591534799,
+		ObjectType:     "activity",
+		OwnerId:        47155909,
+		SubscriptionId: 160797,
+		Updates:        update,
+	}
+
 	requestBody, err := json.Marshal(message)
 	fmt.Printf("%s\n", requestBody)
 
@@ -64,6 +75,38 @@ func main() {
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := Client.Do(req)
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	_, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if resp.StatusCode != 200 {
+		fmt.Printf("Response status code %v\n", resp.StatusCode)
+		return
+	}
+
+	fmt.Println("Ping OK")
+
+	time.Sleep(20 * time.Second)
+
+	requestBody2, err := json.Marshal(message2)
+	fmt.Printf("%s\n", requestBody2)
+
+	if err != nil {
+		log.Fatalln(err)
+		return
+	}
+
+	req, err = http.NewRequest("POST", address, bytes.NewBuffer(requestBody2))
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err = Client.Do(req)
 	if err != nil {
 		log.Fatalln(err)
 		return
